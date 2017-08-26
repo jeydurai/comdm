@@ -1,0 +1,88 @@
+from ..datamodels.bookingdump import BookingDump
+from pprint import pprint
+import string
+
+
+
+class Subset(BookingDump):
+    """subset command handler"""
+
+    
+    def __init__(self, ops):
+        self.cloud = ops['cloud']
+        self.xlude_cus = ops['excludecus']
+        self.outfile = ops['out']
+        self.writeas = ops['writeas']
+        self.verbose = ops['verbose']
+        super().__init__(ops['sl3'], ops['sl4'], ops['sl5'], ops['sl6'], ops['salesagent'],
+                         ops['sensitivity'], ops['servindi'], ops['onlycom'])
+        self.query = self.generate_query(ops['year'], ops['quarter'], ops['month'],
+                                         ops['week'], ops['servindi'], for_cmd='subset', )
+    
+    def process(self):
+        """Function that executes the whole process"""
+        if self.verbose: self.make_run() # Dispalys the query object
+        print("Querying...")
+        self.prepare_data(self.query)
+        if not self.cloud: self.exclude_cloud()
+        if self.xlude_cus: self.exclude_customers(self.xlude_cus)
+        self.show_results()
+        self.write()
+        return
+
+    def show_results(self):
+        """Displays the result of the query"""
+        self.show_basic()
+        self.show_more(self.report_node_level())
+        print("Total %d row(s) matched" % self.matched_rows)
+        print("\n")
+        return
+
+    def show_basic(self):
+        """Shows the Basic metrics and matrices"""
+        print("\n")
+        print("Report Summary")
+        print("==============")
+        print("Total Bookings: %.2f" % self.df.booking_net.sum())
+        print("\n")
+        print("Products / Services Split")
+        print("------------------------")
+        grp_by = ['services_indicator']
+        print(self.df.groupby(grp_by).booking_net.sum())
+        print("\n")
+        print("Quarter Breakup by Products/Services")
+        print("------------------------------------")
+        grp_by = ['fiscal_quarter_id', 'services_indicator']
+        print(self.df.groupby(grp_by).booking_net.sum())
+        print("\n")
+        return
+
+    def show_more(self, based_on):
+        """Shows the broader metrics and matrices"""
+        print("%s Breakup (Products)" % based_on)
+        print("----------------------")
+        grp_by = [based_on]
+        mask = (self.df.services_indicator == 'products')
+        print(self.df.loc[mask, :].groupby(grp_by).booking_net.sum())
+        print("\n")
+        print("%s Breakup (Services)" % based_on)
+        print("----------------------")
+        mask = (self.df.services_indicator == 'services')
+        print(self.df.loc[mask, :].groupby(grp_by).booking_net.sum())
+        print("\n")
+
+    def write(self):
+        """Write the DataFrame as XLSX/CSV file"""
+        if self.writeas == 'xlsx':
+            if not self.outfile:
+                self.outfile = "subset.xlsx"
+                print('Writing data as Excel file...')
+            self.df.to_excel(self.outfile, index=False)
+        elif self.writeas == 'csv':
+            if not self.outfile:
+                self.outfile = "subset.csv"
+                print('Writing data as CSV file...')
+            self.df.to_excel(self.outfile)
+        print("\n")
+        return
+

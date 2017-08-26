@@ -1,6 +1,6 @@
 from pymongo import MongoClient
-from helpers.filereader import MongoReader
-from helpers.loophelper import Progress
+from .reader import MongoReader
+from .loophelper import Progress
 import timeit
 
 

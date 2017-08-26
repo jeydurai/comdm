@@ -12,15 +12,23 @@ class MongoReader:
         self.coll_name = coll_name
         self.client = MongoClient(host, port)
         self.db = self.client[self.db_name]
+        pd.options.display.float_format = '{:10,.2f}'.format
 
-    def get_booking_dump_cols(self):
-        """Queries and returns the clean 'ent_dump_from_finance'
-        columns"""
+    def get_cols(self):
+        """Queries and returns the clean collections' columns"""
         return list(self.db[self.coll_name].find({}))[0]
 
     def get_doc_count(self):
         """Finds and Returns the total number of documents in a collection"""
         return self.db[self.coll_name].find({}).count()
+
+    def rows(self, qry):
+        """Returns the No of documents matched for the query"""
+        return self.db[self.coll_name].find(qry).count()
+
+    def run_find(self, qry, hide):
+        """Runs the find query and returns as pandas dataframe"""
+        return pd.DataFrame(list(self.db[self.coll_name].find(qry, hide)))
 
     def run_agg(self, qry):
         """Runs the query returns as pandas dataframe"""

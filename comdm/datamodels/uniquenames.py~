@@ -1,0 +1,20 @@
+from ..utils.querymaker import Assembler
+from ..utils.querymaker import MongoTools
+from ..utils.stringutilities import BasicStringUtils
+from ..helpers.reader import MongoReader
+from ..helpers.loophelper import Progress
+import pandas as pd
+from pprint import pprint
+import timeit
+
+
+class UniqueNames(MongoReader):
+    """Holds the data and functionalities of mapping unique customers and partners"""
+
+    coll_name = 'universal_unique_names'
+
+    def __init__(self):
+        self.df = None
+        super().__init__(UniqueNames.coll_name)
+
+    def 

@@ -1,0 +1,38 @@
+from ..utils.querymaker import Assembler
+from ..utils.querymaker import MongoTools
+from ..utils.stringutilities import BasicStringUtils
+from ..helpers.reader import MongoReader
+from ..helpers.loophelper import Progress
+import pandas as pd
+from pprint import pprint
+import timeit
+
+
+class AMNodes(MongoReader):
+    """Holds the data of AM with nodes"""
+
+    coll_name = 'commercial_am_unique_nodes'
+    qtr = 'fiscal_quarter_id'
+    cname = 'customer_name'
+    sl4 = 'sales_level_4'
+    sl5 = 'sales_level_5'
+    sl6 = 'sales_level_6'
+    sales_agent_m = 'sales_agent_m'
+    on_list = [AMNodes.qtr, AMNodes.cname, AMNodes.sl4, AMNodes.sl5, AMNodes.sl6,
+               AMNodes.sales_agent_m]
+
+
+    def __init__(self):
+        self.df = None
+        self.qry = {}
+        self.shape = None
+        super().__init__(AMNodes.coll_name)
+
+    def read_and_set(self):
+        """Queries in MongoDB and stores the data"""
+        print("[Info]: <from %s> Reading Data..." % self.__class__)
+        self.df = self.run_find(self.qry, {})
+        self.shape = self.df.shape
+        return
+
+    

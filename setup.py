@@ -8,7 +8,8 @@ setup(
     author='Jeyaraj Durairaj',
     author_email='jeyaraj.durairaj@gmail.com',
     packages=find_packages(),
-    install_requires=['Click', 'pymongo', 'pandas', 'numpy', 'xlrd', 'xlsxwriter'],
+    install_requires=['Click', 'pymongo', 'pandas', 'numpy', 'xlrd', 
+        'xlsxwriter'],
     entry_points = {
         'console_scripts': [
             'comdm=comdm.comdm:main'

@@ -1,0 +1,18 @@
+from ..helpers.reader import MongoReader
+import pandas as pd
+from pprint import pprint
+
+
+
+class InternalRestatement(MongoReader):
+    """Provides all reading functionalities in 'ncr_sl_mm_restatement' collection"""
+
+
+    def __init__(self):
+        self.hide_fields = { '_id': 0 }
+        self.qry = {}
+        self.restate_data = None
+
+    def read(self):
+        """Queries MongoDB and stores the data"""
+        self.restate_data = self.run_find(self.qry, self.hide_fields)
